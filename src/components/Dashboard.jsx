@@ -1,14 +1,21 @@
 import { useState, useEffect } from 'react';
-import { BookOpen, Calendar, ArrowRight, CheckCircle2, CloudFog, Sunrise, Moon, Sparkles, Trophy, Flame, Target } from 'lucide-react';
+import { BookOpen, Calendar, ArrowRight, CheckCircle2, CloudFog, Sunrise, Moon, Sparkles, Trophy, Flame, Target, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useBiblePlan } from '../hooks/useBiblePlan';
 import { useNavigate } from 'react-router-dom';
 import { getDailyImage } from '../services/imageService';
-import { format } from 'date-fns';
+import { format, addDays, isSameDay } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
 export default function Dashboard() {
-    const { getReadingsForToday, toggleReading, stats } = useBiblePlan();
-    const readings = getReadingsForToday();
+    const { getReadingsForDate, toggleReading, stats } = useBiblePlan();
+    const [currentDate, setCurrentDate] = useState(new Date());
+    const [readings, setReadings] = useState([]);
+
+    // Refresh readings when date changes
+    useEffect(() => {
+        setReadings(getReadingsForDate(currentDate));
+    }, [currentDate]); // Depend on currentDate
+
     const navigate = useNavigate();
     const bgImage = getDailyImage();
 
@@ -23,24 +30,39 @@ export default function Dashboard() {
     const totalCount = readings.length;
     const progress = totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
 
+    const isToday = isSameDay(currentDate, new Date());
+
+    const handlePrevDay = () => setCurrentDate(d => addDays(d, -1));
+    const handleNextDay = () => setCurrentDate(d => addDays(d, 1));
+
     return (
         <div className="space-y-6 animate-in pb-24">
             {/* Header Compact - Horizontal Layout */}
             <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
                 <div className="flex items-center gap-6 w-full md:w-auto">
-                    {/* Circular Date Badge */}
-                    <div className="flex flex-col items-center justify-center w-16 h-16 bg-slate-50 rounded-2xl border border-slate-100 shrink-0">
-                        <span className="text-xs font-bold uppercase text-red-500">{format(new Date(), 'MMM', { locale: fr })}</span>
-                        <span className="text-xl font-serif font-bold text-slate-800">{format(new Date(), 'd')}</span>
+                    {/* Circular Date Badge with Navigation */}
+                    <div className="flex items-center gap-2">
+                        <button onClick={handlePrevDay} className="p-2 -ml-2 text-slate-300 hover:text-slate-600 hover:bg-slate-50 rounded-full transition-all">
+                            <ChevronLeft size={20} />
+                        </button>
+
+                        <div className="flex flex-col items-center justify-center w-16 h-16 bg-slate-50 rounded-2xl border border-slate-100 shrink-0 transition-all hover:scale-105 cursor-pointer" onClick={() => setCurrentDate(new Date())} title="Revenir à aujourd'hui">
+                            <span className={`text-xs font-bold uppercase ${isToday ? 'text-red-500' : 'text-slate-400'}`}>{format(currentDate, 'MMM', { locale: fr })}</span>
+                            <span className="text-xl font-serif font-bold text-slate-800">{format(currentDate, 'd')}</span>
+                        </div>
+
+                        <button onClick={handleNextDay} className="p-2 text-slate-300 hover:text-slate-600 hover:bg-slate-50 rounded-full transition-all">
+                            <ChevronRight size={20} />
+                        </button>
                     </div>
 
                     <div>
                         <div className="flex items-center gap-2 text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">
                             <GreetingIcon size={12} className="text-accent" />
-                            {greeting}
+                            {isToday ? greeting : format(currentDate, 'EEEE d MMMM', { locale: fr })}
                         </div>
                         <h1 className="font-serif text-2xl font-bold text-slate-800">
-                            {userName}
+                            {isToday ? userName : "Plan de Lecture"}
                         </h1>
                     </div>
                 </div>
@@ -78,7 +100,7 @@ export default function Dashboard() {
                         <div className="p-6 border-b border-slate-50 flex items-center justify-between bg-slate-50/50">
                             <h2 className="font-serif text-lg font-bold text-slate-800 flex items-center gap-2">
                                 <BookOpen size={18} className="text-slate-400" />
-                                À lire aujourd'hui
+                                {isToday ? "À lire aujourd'hui" : `Lecture du ${format(currentDate, 'd MMM')}`}
                             </h2>
                             <span className="text-xs font-bold bg-white px-2 py-1 rounded text-slate-400 shadow-sm border border-slate-100">
                                 {completedCount}/{totalCount}
@@ -94,8 +116,8 @@ export default function Dashboard() {
                                         className={`group p-4 flex items-center gap-4 cursor-pointer hover:bg-slate-50 transition-colors ${reading.completed ? 'opacity-50' : ''}`}
                                     >
                                         <div className={`w-6 h-6 rounded border flex items-center justify-center transition-all ${reading.completed
-                                                ? 'bg-accent border-accent text-white'
-                                                : 'border-slate-300 text-transparent group-hover:border-accent'
+                                            ? 'bg-accent border-accent text-white'
+                                            : 'border-slate-300 text-transparent group-hover:border-accent'
                                             }`}>
                                             <CheckCircle2 size={14} strokeWidth={3} />
                                         </div>
@@ -115,7 +137,7 @@ export default function Dashboard() {
                             ) : (
                                 <div className="p-12 text-center">
                                     <CloudFog className="mx-auto text-slate-300 mb-2" size={32} />
-                                    <span className="text-sm text-slate-500 font-medium">Tout est calme aujourd'hui.</span>
+                                    <span className="text-sm text-slate-500 font-medium">Aucune lecture prévue pour ce jour.</span>
                                 </div>
                             )}
                         </div>

@@ -86,10 +86,10 @@ export function useBiblePlan() {
         localStorage.setItem(`${JOURNAL_PREFIX}${dateKey}`, content);
     };
 
-    const getReadingsForToday = () => {
-        const today = new Date();
-        const monthName = today.toLocaleDateString('fr-FR', { month: 'long' });
-        const day = today.getDate();
+    const getReadingsForDate = (dateParam = new Date()) => {
+        const date = new Date(dateParam);
+        const monthName = date.toLocaleDateString('fr-FR', { month: 'long' });
+        const day = date.getDate();
 
         // Capitalize month name
         const capMonth = monthName.charAt(0).toUpperCase() + monthName.slice(1);
@@ -110,6 +110,8 @@ export function useBiblePlan() {
             completed: isCompleted(r.id)
         }));
     };
+
+    const getReadingsForToday = () => getReadingsForDate(new Date());
 
     // Favorites Logic
     const [favorites, setFavorites] = useState(() => {
@@ -144,6 +146,7 @@ export function useBiblePlan() {
         toggleFavorite,
         isFavorite,
         getReadingsForToday,
+        getReadingsForDate,
         getJournalEntry,
         saveJournalEntry
     };

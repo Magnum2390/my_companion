@@ -134,107 +134,123 @@ export default function BibleReader() {
                     </div>
 
                     <div className="flex items-center gap-1">
-                        <button onClick={handlePrev} disabled={chapter <= 1} className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg disabled:opacity-30 transition-colors">
+                        <button onClick={handlePrev} disabled={chapter <= 1} className="hidden md:block p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg disabled:opacity-30 transition-colors">
                             <ChevronLeft size={22} />
                         </button>
-                        <button onClick={handleNext} className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
+                        <button onClick={handleNext} className="hidden md:block p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
                             <ChevronRight size={22} />
                         </button>
-                        <div className="h-6 w-px bg-slate-200 mx-2" />
+                        <div className="hidden md:block h-6 w-px bg-slate-200 mx-2" />
                         <button onClick={toggleFontSize} className="p-2 text-slate-400 hover:text-accent hover:bg-blue-50 rounded-lg transition-colors">
                             <Type size={22} />
                         </button>
                     </div>
                 </div>
-            </div>
 
-            {/* Main Reading Area - Full Width */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar" ref={bookRef}>
-                <div className="max-w-[95vw] mx-auto px-4 py-8 md:py-10">
+                {/* Main Reading Area - Centered for Readability but Wide enough */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar bg-dots-pattern" ref={bookRef}>
+                    <div className="max-w-4xl mx-auto px-6 py-12 md:py-16 pb-32"> {/* Added pb-32 to clear bottom nav */}
 
-                    {loading ? (
-                        <div className="flex flex-col items-center justify-center py-32 text-slate-400 gap-4">
-                            <Loader2 className="animate-spin text-accent" size={32} />
-                            <p className="text-sm font-medium tracking-wide uppercase">Chargement...</p>
-                        </div>
-                    ) : error ? (
-                        <div className="flex flex-col items-center justify-center py-32 text-red-500 gap-4">
-                            <p className="text-lg font-medium">{error}</p>
-                            <button onClick={() => window.location.reload()} className="text-sm underline">Réessayer</button>
-                        </div>
-                    ) : (
-                        <div className="animate-in slide-in-from-bottom-4 duration-700 ease-out">
-                            {/* Chapter Title */}
-                            <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-8 text-center md:text-left">
-                                {book} <span className="text-accent">{chapter}</span>
-                            </h1>
-
-                            {/* Verses Content - Full Width */}
-                            <div className={`space-y-4 ${fontSize} text-slate-800 leading-normal font-sans`}>
-                                {verses.map((verse) => (
-                                    <div key={verse.verse} className="group relative pl-0 md:pl-10 py-1 rounded-lg transition-all duration-200 hover:bg-slate-50">
-                                        {/* Desktop Verse Number (Left Margin) */}
-                                        <div className="hidden md:flex absolute left-0 top-1.5 w-8 justify-end">
-                                            <span className="text-xs font-bold text-slate-300 group-hover:text-accent select-none transition-colors font-mono">
-                                                {verse.verse}
-                                            </span>
-                                        </div>
-
-                                        {/* Mobile Format (Inline) */}
-                                        <div className="md:hidden inline font-bold text-accent text-sm mr-1 select-none">
-                                            {verse.verse}
-                                        </div>
-
-                                        {/* Text Engine */}
-                                        <span dangerouslySetInnerHTML={{ __html: verse.text }} className="text-slate-800 font-medium" />
-                                    </div>
-                                ))}
+                        {loading ? (
+                            <div className="flex flex-col items-center justify-center py-32 text-slate-400 gap-4 animate-pulse">
+                                <Book size={48} className="text-slate-200" />
+                                <p className="text-xs font-bold tracking-widest uppercase text-slate-300">Chargement du chapitre...</p>
                             </div>
-
-                            {/* Floating Navigation Pill (Bottom Centered) */}
-                            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 p-1.5 bg-white/90 backdrop-blur-xl border border-slate-200/60 shadow-2xl shadow-slate-200/50 rounded-full animate-in slide-in-from-bottom-6 duration-500">
-                                <button
-                                    onClick={handlePrev}
-                                    disabled={chapter <= 1}
-                                    className="p-3 rounded-full hover:bg-slate-100/80 text-slate-500 hover:text-slate-900 disabled:opacity-30 disabled:hover:bg-transparent transition-all group"
-                                    title="Chapitre précédent (Flèche Gauche)"
-                                >
-                                    <ChevronLeft size={20} className="group-hover:-translate-x-0.5 transition-transform" />
-                                </button>
-
-                                <div className="h-6 w-px bg-slate-200 mx-1" />
-
-                                <div className="px-4 text-center min-w-[120px]">
-                                    <span className="text-xs font-bold uppercase tracking-widest text-slate-400 block mb-0.5">Chapitre</span>
-                                    <span className="font-serif font-bold text-slate-800 text-lg leading-none cursor-pointer hover:text-accent transition-colors" title="Changer rapidement">
-                                        {chapter}
-                                    </span>
+                        ) : error ? (
+                            <div className="flex flex-col items-center justify-center py-32 text-red-500 gap-4">
+                                <p className="text-lg font-medium">{error}</p>
+                                <button onClick={() => window.location.reload()} className="text-sm underline">Réessayer</button>
+                            </div>
+                        ) : (
+                            <div className="animate-in slide-in-from-bottom-4 duration-700 ease-out">
+                                {/* Chapter Title with Decorative elements */}
+                                <div className="text-center mb-12 relative">
+                                    <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-accent mb-2 block">Sainte Bible</span>
+                                    <h1 className="text-4xl md:text-6xl font-serif font-bold text-slate-900 tracking-tight leading-tight">
+                                        {book} <span className="text-accent/80">{chapter}</span>
+                                    </h1>
+                                    <div className="w-16 h-1 bg-gradient-to-r from-transparent via-accent to-transparent mx-auto mt-6 opacity-30" />
                                 </div>
 
-                                <div className="h-6 w-px bg-slate-200 mx-1" />
+                                {/* Verses Content - Optimized Typography */}
+                                <div className={`space-y-6 ${fontSize} text-slate-700 leading-relaxed font-serif`}>
+                                    {verses.map((verse) => (
+                                        <div key={verse.verse} className="group relative pl-2 md:pl-0 transition-colors">
+                                            {/* Verse Number - Floating in margin on Desktop, Inline on Mobile */}
+                                            <span className="hidden md:inline-block absolute -left-12 top-1 text-xs font-sans font-bold text-slate-300 select-none w-8 text-right group-hover:text-accent transition-colors">
+                                                {verse.verse}
+                                            </span>
+                                            <span className="md:hidden inline-block mr-2 text-xs font-sans font-bold text-accent select-none align-top mt-1">
+                                                {verse.verse}
+                                            </span>
 
-                                <button
-                                    onClick={handleNext}
-                                    className="p-3 rounded-full hover:bg-slate-100/80 text-slate-500 hover:text-slate-900 transition-all group"
-                                    title="Chapitre suivant (Flèche Droite)"
-                                >
-                                    <ChevronRight size={20} className="group-hover:translate-x-0.5 transition-transform" />
-                                </button>
+                                            {/* Text Engine */}
+                                            <span
+                                                dangerouslySetInnerHTML={{ __html: verse.text }}
+                                                className="decoration-accent/30 underline-offset-4 selection:bg-accent/20"
+                                            />
+
+                                            {/* Quick Interactive Actions (Selection-like) */}
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    toggleFavorite({
+                                                        id: `${book}-${chapter}-${verse.verse}`,
+                                                        book,
+                                                        chapter,
+                                                        verse: verse.verse,
+                                                        text: verse.text
+                                                    });
+                                                }}
+                                                className={`inline-flex items-center justify-center ml-2 p-1.5 rounded-full transition-all align-middle opacity-0 group-hover:opacity-100 ${isFavorite(`${book}-${chapter}-${verse.verse}`) ? 'opacity-100 text-red-500 bg-red-50' : 'text-slate-300 hover:text-red-400 hover:bg-slate-50'}`}
+                                            >
+                                                <Heart size={16} className={isFavorite(`${book}-${chapter}-${verse.verse}`) ? "fill-current" : ""} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Floating Navigation Pill - Pure Glassmorphism */}
+                                <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1 p-2 bg-white/80 backdrop-blur-xl border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-full animate-in slide-in-from-bottom-6 duration-500 ring-1 ring-slate-900/5 hover:scale-105 transition-transform">
+                                    <button
+                                        onClick={handlePrev}
+                                        disabled={chapter <= 1}
+                                        className="p-3 rounded-full hover:bg-slate-900/5 text-slate-500 hover:text-slate-900 disabled:opacity-20 disabled:hover:bg-transparent transition-all active:scale-95"
+                                    >
+                                        <ChevronLeft size={24} />
+                                    </button>
+
+                                    <div className="h-4 w-px bg-slate-200 mx-2" />
+
+                                    <div className="flex flex-col items-center min-w-[100px] cursor-pointer group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-accent transition-colors">Chapitre</span>
+                                        <span className="font-serif font-bold text-xl text-slate-800 leading-none">{chapter}</span>
+                                    </div>
+
+                                    <div className="h-4 w-px bg-slate-200 mx-2" />
+
+                                    <button
+                                        onClick={handleNext}
+                                        className="p-3 rounded-full hover:bg-slate-900/5 text-slate-500 hover:text-slate-900 transition-all active:scale-95"
+                                    >
+                                        <ChevronRight size={24} />
+                                    </button>
+                                </div>
                             </div>
+                        )}
+                    </div>
+                </div>
 
-                            {/* Keyboard Shortcuts Listener */}
-                            <ShortcutListener onNext={handleNext} onPrev={handlePrev} />
+                {/* Keyboard Shortcuts Listener */}
+                <ShortcutListener onNext={handleNext} onPrev={handlePrev} />
 
-                            {/* Hide Scrollbar Style */}
-                            <style jsx>{`
+                {/* Hide Scrollbar Style */}
+                <style jsx>{`
                                 .custom-scrollbar::-webkit-scrollbar { width: 6px; }
                                 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
                                 .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.1); border-radius: 10px; }
                                 .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(0,0,0,0.2); }
                             `}</style>
-                        </div>
-                    )}
-                </div>
             </div>
         </div>
     );
