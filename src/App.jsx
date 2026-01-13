@@ -7,21 +7,24 @@ import Journal from './components/Journal';
 import BibleReader from './components/BibleReader';
 import Favorites from './components/Favorites';
 import Settings from './components/Settings';
+import { ToastProvider } from './context/ToastContext';
 
 function App() {
   return (
     <BrowserRouter>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/calendrier" element={<Calendar />} />
-          <Route path="/journal" element={<Journal />} />
-          <Route path="/bible" element={<BibleReader />} />
-          <Route path="/favoris" element={<Favorites />} />
-          <Route path="/parametres" element={<Settings />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Layout>
+      <ToastProvider>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/calendrier" element={<Calendar />} />
+            <Route path="/journal" element={<Journal />} />
+            <Route path="/bible" element={<BibleReader />} />
+            <Route path="/favoris" element={<Favorites />} />
+            <Route path="/parametres" element={<Settings />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Layout>
+      </ToastProvider>
     </BrowserRouter>
   );
 }
